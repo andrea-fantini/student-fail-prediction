@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Jul 25 10:29:02 2020
-
-@author: Jatin
-"""
 
 import timeit
 import pandas as pd
@@ -48,7 +43,7 @@ def EDA(df,labels,target_variable_name,
         corr_matrix_annot=False,
         pairplt_col='all',pairplt=False,
         feature_division_figsize=(12,12)):
-    
+    out_folder = '../figures/'
     start_time = timeit.default_timer()
     
     #for converting class labels into integer values
@@ -63,28 +58,29 @@ def EDA(df,labels,target_variable_name,
             
     df_orig=df
     #print('The data looks like this: \n',df_orig.head())
-    print('\nThe shape of data is: ',df_orig.shape)
+    #print('\nThe shape of data is: ',df_orig.shape)
     
     #To check missing values
-    print('\nThe missing values in data are: \n',pd.isnull(df_orig).sum().sort_values(ascending=False))
-    sns.heatmap(pd.isnull(df_orig),cmap=sns.diverging_palette(240, 0, as_cmap=True))
-    plt.title("Missing Values Summary", fontsize=(15), color="red")
-    
+    #print('\nThe missing values in data are: \n',pd.isnull(df_orig).sum().sort_values(ascending=False))
+    ax1 = sns.heatmap(pd.isnull(df_orig),cmap=sns.diverging_palette(240, 0, as_cmap=True))
+    plt.title("Missing Values Summary", fontsize=(15), color="blue")
+    fig1 = ax1.get_figure()
+    fig1.savefig(f"{out_folder}Missing_Values_Summary.png")
     
    
     #Descriptive Statistics
-    print('\nThe summary of data is: \n',df_orig.describe())
-    plt.figure(figsize=data_summary_figsize)
+    #print('\nThe summary of data is: \n',df_orig.describe())
+    fig2 = plt.figure(figsize=data_summary_figsize)
     sns.heatmap(df_orig.describe()[1:].transpose(), annot= True, fmt=".1f",
                 linecolor="black", linewidths=0.3,cmap=data_summary_figcol)
     plt.title("Data Summary", fontsize=(15), color="blue")
-    
+    fig2.savefig(f"{out_folder}Summary_Statistics.png")
       
    
 
     
-    print('\nSome useful data information: \n')
-    print(df_orig.info())
+    #print('\nSome useful data information: \n')
+    #print(df_orig.info())
     #print('\nThe columns in data are: \n',df_orig.columns.values)
     
     
@@ -122,9 +118,10 @@ def EDA(df,labels,target_variable_name,
     mask = np.zeros_like(corr, dtype=bool)
     mask[np.triu_indices_from(mask)] = True
     
-    plt.figure(figsize=corr_matrix_figsize)
-    sns.heatmap(corr,mask=mask, cmap=corr_matrix_figcol,annot=corr_matrix_annot) 
-    
+    fig3 = plt.figure(figsize=corr_matrix_figsize)
+    sns.heatmap(corr,mask=mask, cmap=corr_matrix_figcol,annot=corr_matrix_annot)
+    plt.tight_layout()
+    fig3.savefig(f"{out_folder}Correlation_Matrix.png")
     
     col = df.columns.values
     number_of_columns=len(col)
@@ -132,7 +129,7 @@ def EDA(df,labels,target_variable_name,
     
     
     #To check Outliers
-    plt.figure(figsize=(number_of_columns,number_of_rows))
+    fig4 = plt.figure(figsize=(number_of_columns,number_of_rows))
     
     for i in range(0,len(col)):
         #plt.subplot(number_of_rows + 1,number_of_columns,i+1)
@@ -146,7 +143,7 @@ def EDA(df,labels,target_variable_name,
             sns.set_style('whitegrid')
             sns.boxplot(df[col[i]],color='green',orient='h')
             plt.tight_layout()
-    
+    fig4.savefig(f"{out_folder}Outliers.png")
     
     #To check distribution-Skewness
     for i in range(0,len(col)):
@@ -158,25 +155,30 @@ def EDA(df,labels,target_variable_name,
         
         sns.violinplot(x=target_variable_name, y=col[i], data=df_orig, ax=axis[1], inner='quartile')
         axis[1].set_title('violin of {}, split by target'.format(col[i]))
+        fig.savefig(f"{out_folder}Distribution Skewness of {col[i]}.png")
     
        
     
     #to construct pairplot
     if (pairplt==True) and (pairplt_col!='all'):
-        sns.pairplot(data=df, vars=pairplt_col, hue=target_variable_name)
+        ax_pp = sns.pairplot(data=df, vars=pairplt_col, hue=target_variable_name)
+        fig_pp = ax_pp.get_figure()
+        fig_pp.savefig(f"{out_folder}Pair plot.png")
     elif (pairplt==True) and (pairplt_col=='all'):
-        sns.pairplot(data=df, vars=df.columns.values, hue=target_variable_name)
+        fig_pp = sns.pairplot(data=df, vars=df.columns.values, hue=target_variable_name)
+        fig_pp = ax_pp.get_figure()
+        fig_pp.savefig(f"{out_folder}Pair plot.png")
    
     
     
     #Proportion of target variable in dataset   
     
     st=df[target_variable_name].value_counts().sort_index()
-    print('\nThe target variable is divided into: \n',st) #how many belong to each class of target variable
+    #print('\nThe target variable is divided into: \n',st) #how many belong to each class of target variable
     
     
     
-    plt.figure(figsize=feature_division_figsize)
+    fig5 = plt.figure(figsize=feature_division_figsize)
     plt.subplot(121)
     ax = sns.countplot(y = df_orig[target_variable_name],
                      
@@ -195,10 +197,10 @@ def EDA(df,labels,target_variable_name,
     plt.gca().add_artist(my_circ)
     plt.subplots_adjust(wspace = .2)
     plt.title("Proportion of target variable in dataset")
+    fig5.savefig(f"{out_folder}Outcome Variable.png")
     
-    
-    print('\nThe numerical features are: \n',df_wo_null.select_dtypes(exclude=['object']).columns.tolist())
-    print('\nThe categorical features are: \n',df_wo_null.select_dtypes(include=['object']).columns.tolist())
+    #print('\nThe numerical features are: \n',df_wo_null.select_dtypes(exclude=['object']).columns.tolist())
+    #print('\nThe categorical features are: \n',df_wo_null.select_dtypes(include=['object']).columns.tolist())
     
     #Proportion of categorical variables in dataset   
     if len(df_wo_null.select_dtypes(include=['object']).columns.tolist())>=1:
@@ -209,7 +211,7 @@ def EDA(df,labels,target_variable_name,
             
             
             if (ct.index.size)<50:
-                plt.figure(figsize=feature_division_figsize)
+                fig_cat = plt.figure(figsize=feature_division_figsize)
                 plt.subplot(121)
                 ax = sns.countplot(y = df_wo_null.select_dtypes(include=['object'])[cat_feat],
                                   
@@ -228,6 +230,7 @@ def EDA(df,labels,target_variable_name,
                 plt.gca().add_artist(my_circ)
                 plt.subplots_adjust(wspace = .2)
                 plt.title("Proportion of categorical variable in dataset")
+                fig_cat.savefig(f"{out_folder}Categorical Variable.png")
             else:
                 print('\nThe categorical variable %s has too many divisions to plot \n'%cat_feat)
             continue
