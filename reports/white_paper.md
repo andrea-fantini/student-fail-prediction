@@ -1,0 +1,6 @@
+# Predicting student's failure to meet passing criteria in online Artificial Intelligence course
+This project aims at predicting the outcome of a student in an online course. The course is run by a popular North American Univarsity, and it uses Canvas as the Learning Management System (LMS). The course has a duration of 9 weeks from stat to finish, we aim at predicting if a student will complete the course after collecting the first 4 weeks of student activity data. This is relevant because if we can obtain advance warning that some students are not on track to complete, the learning facilitators can reach out to the student to provide help, allow for extra time to complete the deliverables or offer to shift the enrollment to a later cohort. 
+
+## Data
+
+The data for this project is live data from 5 cohorts of students in the same 9-week online program. The data is anonymous, individual students are identified by the `student_id` number. This id is meaningless to other students or to the general public. To access the data we make use of the Canvas LMS API. Please note, while every user can make API calls with thier individual API key, a student account will not grant you access to download course level data. You will need to have TA, Instructor, Observer, or Admin privileges, to execute most of these API calls. 
