@@ -1,0 +1,5 @@
+Filename : ../models/RandomForestClassifier__precision.pkl
+Model type : <class 'sklearn.ensemble._forest.RandomForestClassifier'>
+Model Parameters : OrderedDict([('class_weight', 'balanced'), ('max_depth', 3), ('min_samples_leaf', 4), ('min_samples_split', 4), ('n_estimators', 316)])
+CV Score : 0.9053326694171765
+Test Score : 0.8021978021978022
